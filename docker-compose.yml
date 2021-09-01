@@ -1,0 +1,74 @@
+version: '3.7'
+
+services:
+  postgres:
+    container_name: postgres
+    image: "postgres:12"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "password"
+      PGDATA: "/data/postgres"
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "15432:5432"
+    restart: unless-stopped
+  pgadmin:
+    container_name: pgadmin
+    image: "dpage/pgadmin4:4.24"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+       - pgadmin:/var/lib/pgadmin
+    ports:
+      - "15433:80"
+    restart: unless-stopped
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+    environment:
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=0.0.0.0
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    volumes:
+      - elk-logs:/var/log:Z
+      - elk-data:/usr/share/elasticsearch/data:Z
+    ports:
+      - 15435:9200
+      - 15436:9300
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.2.0
+    restart: unless-stopped
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_URL: http://elasticsearch:9200/
+    ports:
+      - 15437:5601
+    volumes:
+      - kibana-data:/var/log:Z
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+
+volumes:
+    postgres:
+    pgadmin:
+    elk-logs:
+    elk-data:
+    kibana-data:

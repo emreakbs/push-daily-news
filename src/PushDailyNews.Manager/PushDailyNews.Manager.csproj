@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PushDailyNews.Data\PushDailyNews.Data.csproj" />
+    <ProjectReference Include="..\PushDailyNews.Infrastructure\PushDailyNews.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Dto\" />
+    <Folder Include="Helper\" />
+    <Folder Include="Extension\" />
+  </ItemGroup>
+
+</Project>
