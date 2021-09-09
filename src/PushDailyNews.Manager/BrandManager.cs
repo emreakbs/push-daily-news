@@ -1,5 +1,8 @@
-﻿using PushDailyNews.Data.Repository;
+﻿using PushDailyNews.Data.Helper;
+using PushDailyNews.Data.Repository;
 using PushDailyNews.Infrastructure.Model;
+using PushDailyNews.Infrastructure.Request;
+using PushDailyNews.Infrastructure.Settings;
 using PushDailyNews.Manager.Abstraction;
 using System;
 using System.Collections.Generic;
@@ -11,12 +14,17 @@ namespace PushDailyNews.Manager
     public class BrandManager : IBrandManager
     {
         public BrandRepository _firmRepository { get; set; }
-
+        private readonly IApiHelper<MediaServiceSettings> _mediaServiceApiHelper;
+        private readonly IApiHelper<SearchManagerServiceSettings> _searcManagerServiceApiHelper;
+        private readonly IStateManager _stateManager;
         #region Single Section
         private static readonly Lazy<BrandManager> instance = new Lazy<BrandManager>(() => new BrandManager());
-        public BrandManager()
+        public BrandManager(IApiHelper<MediaServiceSettings> mediaServiceApi, IApiHelper<SearchManagerServiceSettings> searcManagerServiceApi)
         {
             _firmRepository = new BrandRepository();
+            _mediaServiceApiHelper = mediaServiceApi;
+            _searcManagerServiceApiHelper = searcManagerServiceApi;
+            _stateManager = stateManager;
         }
         public static BrandManager Instance => instance.Value;
         #endregion
@@ -54,6 +62,29 @@ namespace PushDailyNews.Manager
         public Task UpdateAsync(BrandModel model)
         {
             return _firmRepository.UpdateAsync(model);
+        }
+
+        public Task<bool> AddElastic(NewElasticRequestModel request, string languageCode)
+        {
+            request = new NewElasticRequestModel()
+            {
+                BrandName = "deneme"
+            };// silebilirsin 
+
+            var headers = new Dictionary<string, string>();
+
+            headers.Add("LanguageCode", languageCode);
+
+            return _searcManagerServiceApiHelper.PostAsync<bool>(services => services.AddAsync, request, headers);
+        }
+
+        public Task<bool> CreateIndex(string indexName, string languageCode)
+        {
+            indexName= indexName + languageCode;
+
+
+            return _searcManagerServiceApiHelper.PostAsync<bool>(services => services.CreateIndex, request, headers);
+            return _searcManagerServiceApiHelper.GetAsync<object>(services => services.GetItem, request, headers);
         }
     }
 }

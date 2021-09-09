@@ -1,11 +1,7 @@
 using Moq;
 using NUnit.Framework;
 using PushDailyNews.Data.Repository.Abstraction;
-using PushDailyNews.Infrastructure.Model;
 using PushDailyNews.Manager.Abstraction;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace PushDailyNews.Manager.Test
 {
@@ -26,15 +22,15 @@ namespace PushDailyNews.Manager.Test
         //AddIndex(BaseElasticSearchModel)
         //PushDailyNewsSearch
         //[Fact]
-        //public async Task GetFaq_WithNoFilter_IsEqual()
+        //public async Task Getbrand_WithNoFilter_IsEqual()
         //{
         //    _brandRepository.Setup(x => x.GetAllAsync()).ReturnsAsync(new List<BrandModel>());
 
         //    BrandRequest request = new BrandRequest { Id= };
 
-        //    var response = await _brandManager.GetFaqAsync(request);
+        //    var response = await _brandManager.GetbrandAsync(request);
 
-        //    Assert.Equal(_faqCacheModel2.FaqTopics.Count, response.Topics.Count);
+        //    Assert.Equal(_brandCacheModel2.Brand.Count, response.Topics.Count);
 
         //}
 
