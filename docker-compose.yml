@@ -1,5 +1,4 @@
 version: '3.7'
-
 services:
   postgres:
     container_name: postgres
@@ -11,7 +10,7 @@ services:
     volumes:
        - postgres:/data/postgres
     ports:
-      - "15432:5432"
+      - "18000:5432"
     restart: unless-stopped
   pgadmin:
     container_name: pgadmin
@@ -24,7 +23,7 @@ services:
     volumes:
        - pgadmin:/var/lib/pgadmin
     ports:
-      - "15433:80"
+      - "18001:80"
     restart: unless-stopped
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
@@ -35,6 +34,8 @@ services:
       - http.cors.enabled=true
       - http.cors.allow-origin=*
       - network.host=0.0.0.0
+      - ELASTICSEARCH_USERNAME=admin
+      - ELASTICSEARCH_PASSWORD=admin
     ulimits:
       nproc: 65535
       memlock:
@@ -46,16 +47,18 @@ services:
       - elk-logs:/var/log:Z
       - elk-data:/usr/share/elasticsearch/data:Z
     ports:
-      - 15435:9200
-      - 15436:9300
+      - 18002:9200
+      - 18003:9300
   kibana:
     image: docker.elastic.co/kibana/kibana:7.2.0
     restart: unless-stopped
     environment:
-      SERVER_NAME: localhost
-      ELASTICSEARCH_URL: http://elasticsearch:9200/
+      - SERVER_NAME=localhost
+      - ELASTICSEARCH_URL=http://elasticsearch:9200/
+      - ELASTICSEARCH_USERNAME=admin
+      - ELASTICSEARCH_PASSWORD=Rnd999
     ports:
-      - 15437:5601
+      - 18004:5601
     volumes:
       - kibana-data:/var/log:Z
     ulimits:
@@ -65,10 +68,36 @@ services:
         hard: -1
     cap_add:
       - ALL
-
+  redis:
+    image: docker.io/bitnami/redis:6.2
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '18005:6379'
+    volumes:
+      - 'redis_data:/bitnami/redis/data'
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "18006:8081"
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    ports:
+      - '18007:8001'
+    volumes:
+      - ./Users/ajeetraina/data/redisinsight:/db
 volumes:
     postgres:
     pgadmin:
     elk-logs:
     elk-data:
     kibana-data:
+    redis_data:
+
