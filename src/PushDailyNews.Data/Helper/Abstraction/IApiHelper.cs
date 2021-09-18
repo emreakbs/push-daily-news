@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PushDailyNews.Data.Helper
+namespace PushDailyNews.Data.Helper.Abstraction
 {
     public interface IApiHelper<T>
     {

@@ -1,4 +1,4 @@
-﻿using PushDailyNews.Data.Helper;
+﻿using PushDailyNews.Data.Helper.Abstraction;
 using PushDailyNews.Data.Repository;
 using PushDailyNews.Infrastructure.Model;
 using PushDailyNews.Infrastructure.Request;
@@ -13,20 +13,21 @@ namespace PushDailyNews.Manager
 {
     public class BrandManager : IBrandManager
     {
+        #region Single Section
         public BrandRepository _firmRepository { get; set; }
         private readonly IApiHelper<MediaServiceSettings> _mediaServiceApiHelper;
         private readonly IApiHelper<SearchManagerServiceSettings> _searcManagerServiceApiHelper;
         private readonly IStateManager _stateManager;
-        #region Single Section
-        private static readonly Lazy<BrandManager> instance = new Lazy<BrandManager>(() => new BrandManager());
-        public BrandManager(IApiHelper<MediaServiceSettings> mediaServiceApi, IApiHelper<SearchManagerServiceSettings> searcManagerServiceApi)
+
+        public BrandManager(IApiHelper<MediaServiceSettings> mediaServiceApi,
+                            IApiHelper<SearchManagerServiceSettings> searcManagerServiceApi,
+                            IStateManager stateManager)
         {
             _firmRepository = new BrandRepository();
             _mediaServiceApiHelper = mediaServiceApi;
             _searcManagerServiceApiHelper = searcManagerServiceApi;
             _stateManager = stateManager;
         }
-        public static BrandManager Instance => instance.Value;
         #endregion
         public Task DeleteRowAsync(Guid id)
         {
@@ -80,7 +81,7 @@ namespace PushDailyNews.Manager
 
         public Task<bool> CreateIndex(string indexName, string languageCode)
         {
-            indexName= indexName + languageCode;
+            indexName = indexName + languageCode;
 
 
             return _searcManagerServiceApiHelper.PostAsync<bool>(services => services.CreateIndex, request, headers);
